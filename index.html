@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Harrison Contracting Inc. - Estimator</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f4f7f6; color: #333; }
+        .section { background: white; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h2 { color: #1a73e8; border-bottom: 2px solid #3498db; padding-bottom: 8px; margin-top: 0; font-size: 18px; }
+        .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .field { flex: 1; min-width: 60px; }
+        label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 4px; color: #7f8c8d; text-transform: uppercase; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 16px; box-sizing: border-box; background: #fafafa; }
+        .results-box { background: #f8f9fa; padding: 12px; border-radius: 8px; margin-top: 10px; border-left: 5px solid #1a73e8; }
+        
+        .line-item { display: flex; justify-content: space-between; padding: 6px 8px; margin-bottom: 2px; font-size: 14px; border-radius: 4px; }
+        .line-item:nth-child(even) { background-color: #e2e8f0; } 
+        
+        .total-row { font-weight: bold; font-size: 16px; color: #27ae60; border-top: 1px solid #dee2e6; padding-top: 10px; margin-top: 8px; padding-left: 8px; padding-right: 8px; }
+        .stage-header { background: #2c3e50; color: white; padding: 10px 15px; border-radius: 8px 8px 0 0; font-weight: bold; margin-bottom: 0; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .stage-container { border: 2px solid #2c3e50; border-radius: 0 0 8px 8px; padding: 15px; margin-bottom: 25px; background: white; }
+        h3 { margin-top: 0; font-size: 16px; color: #34495e; border-left: 4px solid #3498db; padding-left: 10px; margin-bottom: 8px; }
+        .cut-list { float: right; font-size: 12px; color: #e67e22; font-weight: bold; padding-right: 5px; }
+        .grand-total-box { background: #1a73e8; color: white; padding: 25px; border-radius: 12px; text-align: center; font-size: 24px; font-weight: bold; position: sticky; bottom: 10px; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); z-index: 100;}
+        .print-btn { display: block; width: 100%; padding: 18px; background: #27ae60; color: white; text-align: center; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;}
+        .add-btn { display: block; width: 100%; padding: 14px; background: #34495e; color: white; text-align: center; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 25px; text-transform: uppercase;}
+        
+        .remove-btn { background: #e74c3c; color: white; border: none; border-radius: 4px; width: 26px; height: 26px; font-size: 24px; font-weight: bold; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; padding: 0; margin-top: -2px; }
+        .primary-lf { border: 2px solid #3498db !important; background: #f0f8ff !important; }
+        
+        .package-header-bar { background: #1a73e8; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
+        .pkg-container { column-count: 2; column-gap: 15px; }
+        .package-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 6px solid #1a73e8; break-inside: avoid; page-break-inside: avoid; display: inline-block; width: 100%; box-sizing: border-box; }
+        
+        @media (max-width: 768px) { .pkg-container { column-count: 1; } }
+
+        .card-blue { border-left-color: #1a73e8; }
+        .card-gray { border-left-color: #7f8c8d; }
+        .card-orange { border-left-color: #e67e22; }
+        .card-light-blue { border-left-color: #3498db; }
+        .package-subtotal { color: #27ae60; font-weight: bold; margin-top: 10px; font-size: 16px; text-align: right; }
+
+        /* APP MEMORY (MODAL) STYLES */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-bottom: 15px; }
+        .modal-header h2 { margin: 0; color: #2c3e50; border: none; padding: 0; }
+        .close-modal { background: none; border: none; font-size: 28px; cursor: pointer; color: #7f8c8d; }
+        .saved-job-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #bdc3c7; border-radius: 8px; margin-bottom: 10px; background: #f8f9fa; }
+        .saved-job-info { flex: 1; cursor: pointer; }
+        .saved-job-title { font-weight: bold; color: #2980b9; font-size: 16px; margin-bottom: 4px; }
+        .saved-job-date { font-size: 12px; color: #7f8c8d; }
+        .delete-job-btn { background: #e74c3c; color: white; border: none; border-radius: 4px; padding: 8px 12px; cursor: pointer; font-weight: bold; font-size: 12px; margin-left: 10px; }
+        .load-job-btn { background: #27ae60; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer; font-weight: bold; font-size: 14px; margin-left: 10px; }
+
+        /* ========================================= */
+        /* AUTOMATED FLAWLESS PRINT SETTINGS         */
+        /* ========================================= */
+        @media print {
+            @page { margin: 0.5in; } /* Gives a perfect half-inch physical margin on ALL pages */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } 
+            
+            body { background: white; padding: 0 !important; color: black; font-size: 11px !important; }
+            
+            .print-btn, .add-btn, .remove-btn, .modal-overlay { display: none !important; }
+            .print-wrapper { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 10px !important; }
+            h1 { font-size: 18px !important; margin-bottom: 10px !important; }
+            h2 { font-size: 14px !important; padding-bottom: 2px !important; margin-bottom: 4px !important; }
+            h3 { font-size: 12px !important; margin-bottom: 2px !important; border-left-width: 2px !important; padding-left: 6px !important; }
+            
+            .section { border: 1px solid #ccc !important; padding: 8px 12px !important; margin-bottom: 10px !important; page-break-inside: avoid; }
+            .stage-header { padding: 4px 10px !important; font-size: 11px !important; margin-bottom: 0 !important; }
+            .stage-container { border: 1px solid #ccc !important; border-top: none !important; padding: 8px 12px !important; margin-bottom: 0 !important; }
+            
+            .row { margin-bottom: 4px !important; gap: 5px !important; }
+            label { font-size: 9px !important; margin-bottom: 1px !important; }
+            input, textarea { border: none !important; border-bottom: 1px solid #aaa !important; border-radius: 0 !important; padding: 2px 4px !important; font-size: 12px !important; height: auto !important; background: transparent !important; color: black !important; resize: none !important; }
+            .primary-lf { border: none !important; border-bottom: 2px solid #3498db !important; background: transparent !important; }
+            
+            .results-box { padding: 6px 10px !important; margin-top: 6px !important; border-left-width: 3px !important; }
+            .line-item { padding: 1px 4px !important; font-size: 11px !important; margin-bottom: 0 !important; }
+            .total-row { padding-top: 4px !important; margin-top: 4px !important; font-size: 12px !important; }
+            
+            .package-header-bar { padding: 6px !important; font-size: 14px !important; margin-bottom: 10px !important; }
+            .pkg-container { column-count: 1 !important; display: block !important; column-gap: 0 !important; }
+            
+            /* Restored the floating color borders and rounded corners for perfection */
+            .package-card { display: block !important; width: 100% !important; page-break-inside: avoid !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-left-width: 6px !important; }
+            
+            .pkg-title { font-size: 12px !important; padding-bottom: 2px !important; margin-bottom: 4px !important; }
+            .package-subtotal { font-size: 12px !important; margin-top: 4px !important; }
+            .grand-total-box { position: static !important; padding: 10px !important; font-size: 18px !important; margin-top: 10px !important; }
+            
+            body .print-hide, div.print-hide, .package-card.print-hide, .print-wrapper.print-hide { display: none !important; }
+            body.summary-mode .hide-on-summary { display: none !important; }
+            body.summary-mode .section { box-shadow: none !important; border: none !important; padding: 0 !important; margin-bottom: 10px !important; }
+        }
+    </style>
+</head>
+<body onload="initApp()">
+
+    <h1 style="text-align:center; color:#2c3e50; margin-bottom:15px;">Harrison Contracting Inc. - Project Estimate</h1>
+
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;" class="hide-on-summary">
+        <button class="print-btn" style="flex: 1; background-color: #2980b9; padding: 12px; font-size: 16px;" onclick="saveJob()">Save Job</button>
+        <button class="print-btn" style="flex: 1; background-color: #8e44ad; padding: 12px; font-size: 16px;" onclick="openLoadModal()">Load Job</button>
+    </div>
+
+    <div class="section">
+        <h2>Job Details</h2>
+        <div style="margin-bottom: 15px;">
+            <label>Date</label>
+            <input type="date" id="jobDate">
+        </div>
+        <textarea id="jobNotes" rows="3" placeholder="Notes / Address / Client Name..."></textarea>
+    </div>
+
+    <div class="section hide-on-summary">
+        <h2>Material Rates</h2>
+        <div class="row">
+            <div class="field"><label>Concrete $/yd</label><input type="number" id="pConc" value="250" oninput="calc()"></div>
+            <div class="field"><label>#4 Rebar $/stick</label><input type="number" id="pRebar4" value="10" oninput="calc()"></div>
+            <div class="field"><label>#3 Rebar $/stick</label><input type="number" id="pRebar3" value="8" oninput="calc()"></div>
+        </div>
+        <div class="row">
+            <div class="field"><label>Anchor Bolt $/ea</label><input type="number" id="pBolt" value="1.25" oninput="calc()"></div>
+            <div class="field"><label>Simpson Bolt $/ea</label><input type="number" id="pSimpson" value="22.00" oninput="calc()"></div>
+            <div class="field"><label>Dobie $/ea</label><input type="number" id="pDobie" value="1.00" oninput="calc()"></div>
+        </div>
+        <div class="row">
+            <div class="field"><label>Tie Wire $/roll</label><input type="number" id="pWire" value="10.00" oninput="calc()"></div>
+            <div class="field"><label>1-1/8" Form Clip $/ea</label><input type="number" id="pClip" value="1.00" oninput="calc()"></div>
+            <div class="field"><label>Snap Tie $/ea</label><input type="number" id="pSnap" value="1.50" oninput="calc()"></div>
+        </div>
+    </div>
+
+    <div id="foundation-wrapper" class="hide-on-summary">
+        <div class="foundation-block print-wrapper" id="found-block-1">
+            <div class="stage-header" id="sh-f1">
+                <span>FOUNDATION AREA 1 (<span id="hArea1">22</span>" WALL)</span>
+            </div>
+            <div class="stage-container" id="sc-f1">
+                <div class="row">
+                    <div class="field"><label style="color: #2980b9; font-size: 11px;">Total LF of Footing & Wall</label><input type="number" id="f1LF" class="primary-lf" placeholder="Enter Total Length" oninput="calc()"></div>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0 15px 0;">
+                <h3>Footing 1</h3>
+                <div class="row">
+                    <div class="field"><label>Width (In)</label><input type="number" id="f1W" value="16" oninput="calc()"></div>
+                    <div class="field"><label>Depth (In)</label><input type="number" id="f1D" value="8" oninput="calc()"></div>
+                </div>
+                <div class="row">
+                    <div class="field"><label>Horiz rebar runs</label><input type="number" id="f1H" value="2" oninput="calc()"></div>
+                    <div class="field"><label>Vert bar oc (IN)</label><input type="number" id="f1V" value="24" oninput="calc()"></div>
+                    <div class="field"><label>Vert bar length</label><input type="text" id="f1VH" readonly tabindex="-1"></div>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <h3>Wall 1</h3>
+                <div class="row">
+                    <div class="field"><label>Width (In)</label><input type="number" id="w1W" value="6" oninput="calc()"></div>
+                    <div class="field"><label>Height (In)</label><input type="number" id="w1H" value="22" oninput="calc()"></div>
+                    <div class="field"><label>Horiz rebar runs</label><input type="number" id="w1Hor" value="2" oninput="calc()"></div>
+                </div>
+                <div class="row">
+                    <div class="field"><label>Anchor Bolts o.c. (IN)</label><input type="number" id="w1Bolt" value="48" oninput="calc()"></div>
+                    <div class="field"><label>Corners (Qty)</label><input type="number" id="w1Corn" value="4" oninput="calc()"></div>
+                    <div class="field"><label>Simpson Bolts (Qty)</label><input type="number" id="w1Simpson" value="0" oninput="calc()"></div>
+                </div>
+                <div class="results-box">
+                    <div class="line-item"><span>Footing 1 Conc (+5%):</span> <span id="f1ConcRes">0 yd&sup3;</span></div>
+                    <div class="line-item"><span>Footing 1 Horiz Rebar:</span> <span id="f1RebarHRes">0 sticks</span></div>
+                    <div class="line-item"><span>Footing 1 Vert Rebar:</span> <span id="f1RebarVRes">0 sticks</span></div>
+                    <div class="line-item"><span>Wall 1 Conc (+5%):</span> <span id="w1ConcRes">0 yd&sup3;</span></div>
+                    <div class="line-item"><span>Wall 1 Horiz Rebar:</span> <span id="w1RebarRes">0 sticks</span></div>
+                    <div class="line-item"><span>1-1/8" Form Clips:</span> <span id="w1ClipRes">0 pcs</span></div>
+                    <div class="line-item"><span>Snap Ties:</span> <span id="w1SnapRes">0 pcs</span></div>
+                    <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="w1WireRes">0 rolls</span></div>
+                    <div class="line-item"><span>Anchor Bolts (Total):</span> <span id="w1BoltRes">0 pcs</span></div>
+                    <div class="line-item"><span>Simpson Bolts:</span> <span id="w1SimpsonRes">0 pcs</span></div>
+                    <div class="total-row"><span>Area 1 Subtotal:</span> <span id="area1Sub">$0.00</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="add-btn hide-on-summary" onclick="addFoundation()">+ Add Another Foundation Area</button>
+
+    <div class="print-wrapper hide-on-summary" id="wrap-sf">
+        <div class="stage-header">INTERIOR STRIP FOOTINGS</div>
+        <div class="stage-container">
+            <div class="row">
+                <div class="field"><label>LF</label><input type="number" id="sfLF" oninput="calc()"></div>
+                <div class="field"><label>Width (In)</label><input type="number" id="sfW" value="16" oninput="calc()"></div>
+                <div class="field"><label>Depth (In)</label><input type="number" id="sfD" value="8" oninput="calc()"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Horiz rebar runs</label><input type="number" id="sfH" value="2" oninput="calc()"></div>
+                <div class="field"><label>Anchor Bolts o.c. (IN)</label><input type="number" id="sfBolt" value="48" oninput="calc()"></div>
+                <div class="field"><label>Corners (Qty)</label><input type="number" id="sfCorn" value="0" oninput="calc()"></div>
+            </div>
+            <div class="results-box">
+                <div class="line-item"><span>Footing Conc (+5%):</span> <span id="sfConcRes">0 yd&sup3;</span></div>
+                <div class="line-item"><span>Horiz Rebar:</span> <span id="sfRebarHRes">0 sticks</span></div>
+                <div class="line-item"><span>Anchor Bolts (Total):</span> <span id="sfBoltRes">0 pcs</span></div>
+                <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="sfWireRes">0 rolls</span></div>
+                <div class="total-row"><span>Strip Footing Subtotal:</span> <span id="sfSub">$0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="print-wrapper hide-on-summary" id="wrap-pad">
+        <div class="stage-header">LOAD POINT FOOTINGS (PADS)</div>
+        <div class="stage-container" style="margin-bottom: 0;">
+            <div id="dynamic-pads-wrapper">
+                <div class="pad-block" id="pad-block-1">
+                    <h3>Pad Type A <span class="cut-list" id="lpCut1"></span></h3>
+                    <div class="row">
+                        <div class="field"><label>Qty</label><input type="number" id="lpQ1" oninput="calc()"></div>
+                        <div class="field"><label>L (In)</label><input type="number" id="lpL1" oninput="calc()"></div>
+                        <div class="field"><label>W (In)</label><input type="number" id="lpW1" oninput="calc()"></div>
+                        <div class="field"><label>D (In)</label><input type="number" id="lpD1" oninput="calc()"></div>
+                        <div class="field"><label>Bars EW</label><input type="number" id="lpB1" placeholder="EW" oninput="calc()"></div>
+                        <div class="field"><label>o.c. (IN)</label><input type="number" id="lpOc1" placeholder="Grid" oninput="calc()"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="results-box" style="margin-top: 20px;">
+                <div class="line-item"><span>Total Pad Conc (+5%):</span> <span id="lpConcRes">0 yd&sup3;</span></div>
+                <div class="line-item"><span>Total #4 Rebar:</span> <span id="lpRebarRes">0 sticks</span></div>
+                <div class="line-item"><span>Dobies (4 per pad):</span> <span id="lpDobieRes">0 pcs</span></div>
+                <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="lpWireRes">0 rolls</span></div>
+                <div class="total-row"><span>Pads Subtotal:</span> <span id="lpSub">$0.00</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="add-btn hide-on-summary" onclick="addPad()" style="margin-top: -5px; border-radius: 0 0 8px 8px;">+ Add Another Pad Type</button>
+
+    <div class="print-wrapper hide-on-summary" id="wrap-int">
+        <div class="stage-header">INTERIOR FLATWORK</div>
+        <div class="stage-container">
+            <div class="row">
+                <div class="field"><label>Sq Ft</label><input type="number" id="intSq" oninput="calc()"></div>
+                <div class="field"><label>Thick (In)</label><input type="number" id="intThick" value="4" oninput="calc()"></div>
+            </div>
+            <div class="row"><div class="field"><label>Rebar Grid o.c. (IN)</label><input type="number" id="intGrid" value="18" oninput="calc()"></div></div>
+            <div class="results-box">
+                <div class="line-item"><span>Conc (+5%):</span> <span id="intRes">0 yd&sup3;</span></div>
+                <div class="line-item"><span>#3 Rebar Total:</span> <span id="intRebarRes">0 sticks</span></div>
+                <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="intWireRes">0 rolls</span></div>
+                <div class="line-item"><span>Dobies (1 per 10 sq ft):</span> <span id="intDobieRes">0 pcs</span></div>
+                <div class="total-row"><span>Subtotal:</span> <span id="intSub">$0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="print-wrapper hide-on-summary" id="wrap-ext">
+        <div class="stage-header">EXTERIOR FLATWORK</div>
+        <div class="stage-container">
+            <div class="row">
+                <div class="field"><label>Sq Ft</label><input type="number" id="extSq" oninput="calc()"></div>
+                <div class="field"><label>Thick (In)</label><input type="number" id="extThick" value="4" oninput="calc()"></div>
+            </div>
+            <div class="row"><div class="field"><label>Rebar Grid o.c. (IN)</label><input type="number" id="extGrid" value="18" oninput="calc()"></div></div>
+            <div class="results-box">
+                <div class="line-item"><span>Conc (+8%):</span> <span id="extRes">0 yd&sup3;</span></div>
+                <div class="line-item"><span>#3 Rebar Total:</span> <span id="extRebarRes">0 sticks</span></div>
+                <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="extWireRes">0 rolls</span></div>
+                <div class="line-item"><span>Dobies (1 per 10 sq ft):</span> <span id="extDobieRes">0 pcs</span></div>
+                <div class="total-row"><span>Subtotal:</span> <span id="extSub">$0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="print-wrapper hide-on-summary" id="wrap-stairs">
+        <div class="stage-header">STAIRS</div>
+        <div class="stage-container">
+            <div class="row">
+                <div class="field"><label>Sq Ft Area</label><input type="number" id="stSq" oninput="calc()"></div>
+                <div class="field"><label>Avg Thick (In)</label><input type="number" id="stTh" value="10" oninput="calc()"></div>
+                <div class="field"><label>Stair Width (Ft)</label><input type="number" id="stW" value="4" oninput="calc()"></div>
+            </div>
+            <div class="row">
+                <div class="field"><label>Number of Risers</label><input type="number" id="stR" value="0" oninput="calc()"></div>
+                <div class="field"><label>Slope Bar Centers (IN)</label><input type="number" id="stSlopeOc" value="24" oninput="calc()"></div>
+            </div>
+            <div class="results-box">
+                <div class="line-item"><span>Conc (+10%):</span> <span id="stRes">0 yd&sup3;</span></div>
+                <div class="line-item"><span>Stair Rebar (#4):</span> <span id="stRebarRes">0 sticks</span></div>
+                <div class="total-row"><span>Stairs Subtotal:</span> <span id="stSub">$0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="summarySection">
+        <div class="package-header-bar">Material Packages</div>
+        
+        <div class="pkg-container" id="pkg-container">
+            <div class="package-card card-blue" id="pkg-card-1">
+                <h3 class="pkg-title" id="sPkgTitle1">FOUNDATION AREA 1: <span id="sPkgALF1">0</span> LINEAL FEET OF <span id="sPkgA1">0</span> INCH WALL</h3>
+                <div id="sumA1_Detail"></div>
+                <div class="package-subtotal" id="sumA1_p">$0.00</div>
+            </div>
+
+            <div class="package-card card-gray" id="card-sf">
+                <h3 class="pkg-title">INTERIOR STRIP FOOTINGS (<span id="sPkgSFLF">0</span> LF)</h3>
+                <div id="sumSF_Detail"></div>
+                <div class="package-subtotal" id="sumSF_p">$0.00</div>
+            </div>
+            
+            <div class="package-card card-orange" id="card-pad">
+                <h3 class="pkg-title">LOAD POINT PADS (<span id="sPkgPadQ">0</span> PADS)</h3>
+                <div id="sumPad_Detail"></div>
+                <div class="package-subtotal" id="sumPad_p">$0.00</div>
+            </div>
+            
+            <div class="package-card card-light-blue" id="card-int">
+                <h3 class="pkg-title">INTERIOR FLATWORK (<span id="sPkgIntSq">0</span> SQ FT)</h3>
+                <div id="sumInt_Detail"></div>
+                <div class="package-subtotal" id="sumInt_p">$0.00</div>
+            </div>
+
+            <div class="package-card card-light-blue" id="card-ext">
+                <h3 class="pkg-title">EXTERIOR FLATWORK (<span id="sPkgExtSq">0</span> SQ FT)</h3>
+                <div id="sumExt_Detail"></div>
+                <div class="package-subtotal" id="sumExt_p">$0.00</div>
+            </div>
+
+            <div class="package-card card-orange" id="card-stairs">
+                <h3 class="pkg-title">STAIRS (<span id="sPkgStSq">0</span> SQ FT)</h3>
+                <div id="sumStairs_Detail"></div>
+                <div class="package-subtotal" id="sumStairs_p">$0.00</div>
+            </div>
+        </div>
+
+        <div class="package-card" style="background:#e8f0fe; border-left: 6px solid #27ae60; margin-top:15px; display: inline-block; width: 100%; box-sizing: border-box; break-inside: avoid;">
+            <h3 class="pkg-title" style="color:#27ae60;">Grand Total Job Materials</h3>
+            <div class="line-item"><span>Total Concrete:</span><span id="gConc" style="font-weight:bold;">0 yd&sup3;</span></div>
+            <div class="line-item"><span>Total #4 Rebar:</span><span id="gR4" style="font-weight:bold;">0 sticks</span></div>
+            <div class="line-item"><span>Total #3 Rebar:</span><span id="gR3" style="font-weight:bold;">0 sticks</span></div>
+            <div class="line-item"><span>Anchor Bolts:</span><span id="gBolt">0 pcs</span></div>
+            <div class="line-item"><span>Simpson Bolts:</span><span id="gSimp">0 pcs</span></div>
+            <div class="line-item"><span>Dobies:</span><span id="gDobie">0 pcs</span></div>
+            <div class="line-item"><span>Tie Wire:</span><span id="gWire">0 rolls</span></div>
+            <div class="line-item"><span>Form Clips:</span><span id="gClip">0 pcs</span></div>
+            <div class="line-item"><span>Snap Ties:</span><span id="gSnap">0 pcs</span></div>
+        </div>
+    </div>
+
+    <div class="grand-total-box" id="grand">GRAND TOTAL: $0.00</div>
+    
+    <div style="display: flex; gap: 10px; margin-bottom: 40px; margin-top: 20px;">
+        <button class="print-btn" style="flex: 1; background-color: #3498db;" onclick="printSummary()">Print Summary Only</button>
+        <button class="print-btn" style="flex: 1;" onclick="printFull()">Print Full Details</button>
+    </div>
+
+    <div class="modal-overlay" id="loadModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Load Saved Estimate</h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div id="savedJobsList"></div>
+        </div>
+    </div>
+
+    <script>
+        let foundationCount = 1;
+        let padCount = 1;
+        
+        function initApp() {
+            document.getElementById('jobDate').valueAsDate = new Date();
+            calc();
+        }
+
+        function getLetterLabel(num) {
+            let result = '';
+            while (num > 0) {
+                let remainder = (num - 1) % 26;
+                result = String.fromCharCode(65 + remainder) + result;
+                num = Math.floor((num - 1) / 26);
+            }
+            return result;
+        }
+
+        function relabelPads() {
+            let remainingPadBlocks = document.querySelectorAll('#dynamic-pads-wrapper .pad-block');
+            remainingPadBlocks.forEach((block, index) => {
+                let h3 = block.querySelector('h3');
+                let newLabel = "Pad Type " + getLetterLabel(index + 1);
+                if (h3.firstChild && h3.firstChild.nodeType === 3) {
+                   h3.firstChild.textContent = newLabel + " ";
+                } else {
+                   h3.innerHTML = newLabel + h3.innerHTML.substring(h3.innerHTML.indexOf('<span'));
+                }
+            });
+            calc();
+        }
+
+        function relabelFoundations() {
+           let remainingFoundBlocks = document.querySelectorAll('#foundation-wrapper .foundation-block');
+           remainingFoundBlocks.forEach((block, index) => {
+              let h2 = block.querySelector('.stage-header span');
+              let newNum = index + 1;
+              let currentLabelText = h2.textContent;
+              
+              let regex = /(FOUNDATION AREA )(\d+)(.*)/;
+              let match = currentLabelText.match(regex);
+              if (match) {
+                 h2.textContent = match[1] + newNum + match[3];
+              }
+              let removeBtn = block.querySelector('.remove-btn');
+              if(removeBtn) {
+                 removeBtn.setAttribute("onclick", `removeFoundation(${newNum})`);
+              }
+           });
+           calc();
+        }
+
+        function saveJob() {
+            let jobName = document.getElementById('jobNotes').value.split('\n')[0].trim();
+            if(!jobName) {
+                jobName = prompt("Enter a name for this estimate (e.g., Dennery ADU):");
+                if(!jobName) return; 
+            } else {
+                let confirmName = prompt("Save estimate as:", jobName);
+                if(confirmName === null) return;
+                jobName = confirmName || "Unnamed Estimate";
+            }
+
+            let data = {
+                foundationCount: foundationCount,
+                padCount: padCount,
+                saveDate: new Date().toLocaleDateString(),
+                inputs: {}
+            };
+            
+            let inputs = document.querySelectorAll('input:not([type="file"]), textarea');
+            inputs.forEach(input => {
+                if(input.id && !input.readOnly) {
+                    data.inputs[input.id] = input.value;
+                }
+            });
+            
+            let savedJobs = JSON.parse(localStorage.getItem('hci_saved_jobs')) || {};
+            savedJobs[jobName] = data;
+            localStorage.setItem('hci_saved_jobs', JSON.stringify(savedJobs));
+            
+            alert("Estimate '" + jobName + "' saved securely in App Memory!");
+        }
+
+        function openLoadModal() {
+            let savedJobs = JSON.parse(localStorage.getItem('hci_saved_jobs')) || {};
+            let listDiv = document.getElementById('savedJobsList');
+            listDiv.innerHTML = '';
+            
+            let jobNames = Object.keys(savedJobs);
+            if(jobNames.length === 0) {
+                listDiv.innerHTML = '<p style="text-align:center; color:#7f8c8d; font-size:16px;">No saved estimates found.</p>';
+            } else {
+                jobNames.forEach(name => {
+                    let job = savedJobs[name];
+                    let item = document.createElement('div');
+                    item.className = 'saved-job-item';
+                    item.innerHTML = `
+                        <div class="saved-job-info" onclick="loadSpecificJob('${name.replace(/'/g, "\\'")}')">
+                            <div class="saved-job-title">${name}</div>
+                            <div class="saved-job-date">Saved on: ${job.saveDate || 'Unknown'}</div>
+                        </div>
+                        <button class="load-job-btn" onclick="loadSpecificJob('${name.replace(/'/g, "\\'")}')">Load</button>
+                        <button class="delete-job-btn" onclick="deleteJob('${name.replace(/'/g, "\\'")}')">Delete</button>
+                    `;
+                    listDiv.appendChild(item);
+                });
+            }
+            document.getElementById('loadModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('loadModal').style.display = 'none';
+        }
+
+        function deleteJob(name) {
+            if(confirm("Are you sure you want to permanently delete '" + name + "'?")) {
+                let savedJobs = JSON.parse(localStorage.getItem('hci_saved_jobs')) || {};
+                delete savedJobs[name];
+                localStorage.setItem('hci_saved_jobs', JSON.stringify(savedJobs));
+                openLoadModal(); 
+            }
+        }
+
+        function loadSpecificJob(name) {
+            let savedJobs = JSON.parse(localStorage.getItem('hci_saved_jobs')) || {};
+            let data = savedJobs[name];
+            if(!data) return;
+            
+            let fBlocks = document.querySelectorAll('#foundation-wrapper .foundation-block');
+            fBlocks.forEach(b => {
+                let id = b.id.replace('found-block-', '');
+                if(id > 1) { removeFoundation(id, true); } 
+            });
+            foundationCount = 1;
+            
+            if(data.foundationCount > 1) {
+                for(let i = 2; i <= data.foundationCount; i++) { addFoundation(true); } 
+            }
+            
+            let pBlocks = document.querySelectorAll('#dynamic-pads-wrapper .pad-block');
+            pBlocks.forEach(b => {
+                let id = b.id.replace('pad-block-', '');
+                if(id > 1) { removePad(id, true); } 
+            });
+            padCount = 1;
+            
+            if(data.padCount > 1) {
+                for(let i = 2; i <= data.padCount; i++) { addPad(true); } 
+            }
+            
+            for(let key in data.inputs) {
+                let el = document.getElementById(key);
+                if(el) el.value = data.inputs[key];
+            }
+            
+            closeModal();
+            calc();
+        }
+
+        function addFoundation(suppressCalc=false) {
+            foundationCount++;
+            let i = foundationCount;
+
+            let newHtml = `
+            <div class="foundation-block print-wrapper" id="found-block-${i}" style="margin-top:20px;">
+                <div class="stage-header" id="sh-f${i}">
+                    <span>FOUNDATION AREA ${i} (<span id="hArea${i}">0</span>" WALL)</span>
+                    <button class="remove-btn" onclick="removeFoundation(${i})">-</button>
+                </div>
+                <div class="stage-container" id="sc-f${i}">
+                    <div class="row">
+                        <div class="field"><label style="color: #2980b9; font-size: 11px;">Total LF of Footing & Wall</label><input type="number" id="f${i}LF" class="primary-lf" placeholder="Enter Total Length" oninput="calc()"></div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0 15px 0;">
+                    <h3>Footing ${i}</h3>
+                    <div class="row">
+                        <div class="field"><label>Width (In)</label><input type="number" id="f${i}W" value="16" oninput="calc()"></div>
+                        <div class="field"><label>Depth (In)</label><input type="number" id="f${i}D" value="8" oninput="calc()"></div>
+                    </div>
+                    <div class="row">
+                        <div class="field"><label>Horiz rebar runs</label><input type="number" id="f${i}H" value="2" oninput="calc()"></div>
+                        <div class="field"><label>Vert bar oc (IN)</label><input type="number" id="f${i}V" value="24" oninput="calc()"></div>
+                        <div class="field"><label>Vert bar length</label><input type="text" id="f${i}VH" readonly tabindex="-1"></div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                    <h3>Wall ${i}</h3>
+                    <div class="row">
+                        <div class="field"><label>Width (In)</label><input type="number" id="w${i}W" value="6" oninput="calc()"></div>
+                        <div class="field"><label>Height (In)</label><input type="number" id="w${i}H" value="" placeholder="Height" oninput="calc()"></div>
+                        <div class="field"><label>Horiz rebar runs</label><input type="number" id="w${i}Hor" value="2" oninput="calc()"></div>
+                    </div>
+                    <div class="row">
+                        <div class="field"><label>Anchor Bolts o.c. (IN)</label><input type="number" id="w${i}Bolt" value="48" oninput="calc()"></div>
+                        <div class="field"><label>Corners (Qty)</label><input type="number" id="w${i}Corn" value="4" oninput="calc()"></div>
+                        <div class="field"><label>Simpson Bolts (Qty)</label><input type="number" id="w${i}Simpson" value="0" oninput="calc()"></div>
+                    </div>
+                    <div class="results-box">
+                        <div class="line-item"><span>Footing ${i} Conc (+5%):</span> <span id="f${i}ConcRes">0 yd\u00B3</span></div>
+                        <div class="line-item"><span>Footing ${i} Horiz Rebar:</span> <span id="f${i}RebarHRes">0 sticks</span></div>
+                        <div class="line-item"><span>Footing ${i} Vert Rebar:</span> <span id="f${i}RebarVRes">0 sticks</span></div>
+                        <div class="line-item"><span>Wall ${i} Conc (+5%):</span> <span id="w${i}ConcRes">0 yd\u00B3</span></div>
+                        <div class="line-item"><span>Wall ${i} Horiz Rebar:</span> <span id="w${i}RebarRes">0 sticks</span></div>
+                        <div class="line-item"><span>1-1/8" Form Clips:</span> <span id="w${i}ClipRes">0 pcs</span></div>
+                        <div class="line-item"><span>Snap Ties:</span> <span id="w${i}SnapRes">0 pcs</span></div>
+                        <div class="line-item"><span>Tie Wire (Max Twin):</span> <span id="w${i}WireRes">0 rolls</span></div>
+                        <div class="line-item"><span>Anchor Bolts (Total):</span> <span id="w${i}BoltRes">0 pcs</span></div>
+                        <div class="line-item"><span>Simpson Bolts:</span> <span id="w${i}SimpsonRes">0 pcs</span></div>
+                        <div class="total-row"><span>Area ${i} Subtotal:</span> <span id="area${i}Sub">$0.00</span></div>
+                    </div>
+                </div>
+            </div>`;
+            document.getElementById('foundation-wrapper').insertAdjacentHTML('beforeend', newHtml);
+
+            let pkgHtml = `
+            <div class="package-card card-blue" id="pkg-card-${i}">
+                <h3 class="pkg-title" id="sPkgTitle${i}">FOUNDATION AREA ${i}: <span id="sPkgALF${i}">0</span> LINEAL FEET OF <span id="sPkgA${i}">0</span> INCH WALL</h3>
+                <div id="sumA${i}_Detail"></div>
+                <div class="package-subtotal" id="sumA${i}_p">$0.00</div>
+            </div>`;
+            document.getElementById('card-sf').insertAdjacentHTML('beforebegin', pkgHtml);
+            
+            if(!suppressCalc) calc();
+        }
+
+        function removeFoundation(id, suppressCalc=false) {
+            let block = document.getElementById('found-block-' + id);
+            let card = document.getElementById('pkg-card-' + id);
+            if (block) block.remove();
+            if (card) card.remove();
+            if(!suppressCalc) relabelFoundations();
+        }
+
+        function addPad(suppressCalc=false) {
+            padCount++;
+            let i = padCount;
+            let currentLetter = getLetterLabel(i);
+            let html = `
+            <div class="pad-block" id="pad-block-${i}">
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+                <h3>Pad Type ${currentLetter} <button class="remove-btn" style="float:right; margin-left: 10px;" onclick="removePad(${i})">-</button> <span class="cut-list" id="lpCut${i}"></span></h3>
+                <div class="row">
+                    <div class="field"><label>Qty</label><input type="number" id="lpQ${i}" oninput="calc()"></div>
+                    <div class="field"><label>L (In)</label><input type="number" id="lpL${i}" oninput="calc()"></div>
+                    <div class="field"><label>W (In)</label><input type="number" id="lpW${i}" oninput="calc()"></div>
+                    <div class="field"><label>D (In)</label><input type="number" id="lpD${i}" oninput="calc()"></div>
+                    <div class="field"><label>Bars EW</label><input type="number" id="lpB${i}" placeholder="EW" oninput="calc()"></div>
+                    <div class="field"><label>o.c. (IN)</label><input type="number" id="lpOc${i}" placeholder="Grid" oninput="calc()"></div>
+                </div>
+            </div>`;
+            document.getElementById('dynamic-pads-wrapper').insertAdjacentHTML('beforeend', html);
+            if(!suppressCalc) calc();
+        }
+
+        function removePad(id, suppressCalc=false) {
+            let block = document.getElementById('pad-block-' + id);
+            if (block) block.remove();
+            if(!suppressCalc) relabelPads();
+        }
+
+        function printSummary() {
+            document.body.classList.add('summary-mode');
+            void document.body.offsetHeight;
+            window.print();
+            document.body.classList.remove('summary-mode');
+        }
+
+        function printFull() {
+            document.body.classList.remove('summary-mode');
+            window.print();
+        }
+
+        function calc() {
+            const pC = parseFloat(document.getElementById('pConc').value) || 0;
+            const pR4 = parseFloat(document.getElementById('pRebar4').value) || 0;
+            const pR3 = parseFloat(document.getElementById('pRebar3').value) || 0;
+            const pBolt = parseFloat(document.getElementById('pBolt').value) || 0;
+            const pSimpson = parseFloat(document.getElementById('pSimpson').value) || 0;
+            const pDobie = parseFloat(document.getElementById('pDobie').value) || 0;
+            const pWire = parseFloat(document.getElementById('pWire').value) || 0;
+            const pClip = parseFloat(document.getElementById('pClip').value) || 0;
+            const pSnap = parseFloat(document.getElementById('pSnap').value) || 0;
+
+            const fmt = (val) => " ($" + val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ")";
+            const buildPkgRow = (lbl, val) => `<div class="line-item"><span>${lbl}</span><span>${val}</span></div>`;
+
+            let gConc = 0, gR4 = 0, gR3 = 0, gBolt = 0, gSimp = 0, gDobie = 0, gWire = 0, gClip = 0, gSnap = 0;
+            let grandTotal = 0;
+
+            function runArea(num) {
+                let lf = parseFloat(document.getElementById('f' + num + 'LF').value) || 0;
+                let fw = parseFloat(document.getElementById('f' + num + 'W').value) || 0;
+                let fd = parseFloat(document.getElementById('f' + num + 'D').value) || 0;
+                let fh = parseFloat(document.getElementById('f' + num + 'H').value) || 0;
+                let fv_oc = parseFloat(document.getElementById('f' + num + 'V').value) || 0;
+                let wh = parseFloat(document.getElementById('w' + num + 'H').value) || 0;
+                let ww = parseFloat(document.getElementById('w' + num + 'W').value) || 0;
+                let whr = parseFloat(document.getElementById('w' + num + 'Hor').value) || 0;
+                let boc = parseFloat(document.getElementById('w' + num + 'Bolt').value) || 0;
+                let corn = parseFloat(document.getElementById('w' + num + 'Corn').value) || 0;
+                let simpson = parseFloat(document.getElementById('w' + num + 'Simpson').value) || 0;
+                
+                let fv_h = wh > 0 ? wh + 6 : 0;
+                
+                let fY = ((lf * (fw/12) * (fd/12)) / 27) * 1.05;
+                let wY = ((lf * (ww/12) * (wh/12)) / 27) * 1.05;
+                let rh = Math.ceil((lf * fh / 20) * 1.15);
+                
+                let v_pcs = fv_oc > 0 && lf > 0 ? Math.ceil(lf / (fv_oc / 12)) + 1 + corn : 0;
+                
+                let vhInput = document.getElementById('f' + num + 'VH');
+                if (vhInput) {
+                    vhInput.value = (fv_h > 0 && v_pcs > 0) ? ('(' + v_pcs + " @ " + fv_h + '"' + ')') : (fv_h > 0 ? ('(' + fv_h + ')') : '');
+                }
+                
+                let rv = v_pcs > 0 && fv_h > 0 ? Math.ceil((v_pcs * (fv_h / 12)) / 20 * 1.15) : 0;
+                
+                let wr = Math.ceil((lf * whr / 20) * 1.15);
+                let bolts = (boc > 0 && lf > 0) ? (Math.ceil(lf / (boc / 12)) + Math.ceil(lf / 16) + corn) : 0;
+                
+                let clips = lf > 0 ? (Math.ceil(lf / 8) * 5) + (corn * 2) : 0;
+                let snapTies = (wh > 24) ? clips : 0; 
+                
+                let totalSticks = rh + rv + wr;
+                let wireRolls = totalSticks > 0 ? Math.ceil(totalSticks / 60) : 0;
+                
+                let cost = (fY + wY)*pC + totalSticks*pR4 + bolts*pBolt + simpson*pSimpson + clips*pClip + snapTies*pSnap + wireRolls*pWire;
+
+                document.getElementById('f'+num+'ConcRes').innerText = fY.toFixed(2) + " yd\u00B3" + fmt(fY * pC);
+                document.getElementById('f'+num+'RebarHRes').innerText = rh + " sticks" + fmt(rh * pR4);
+                
+                let vertResString = (v_pcs > 0 && fv_h > 0) ? `(${v_pcs} @ ${fv_h}")` : `(${v_pcs} pcs)`;
+                document.getElementById('f'+num+'RebarVRes').innerText = rv + " sticks " + vertResString + fmt(rv * pR4);
+                
+                document.getElementById('w'+num+'ConcRes').innerText = wY.toFixed(2) + " yd\u00B3" + fmt(wY * pC);
+                document.getElementById('w'+num+'RebarRes').innerText = wr + " sticks" + fmt(wr * pR4);
+                document.getElementById('w'+num+'ClipRes').innerText = clips + " pcs" + fmt(clips * pClip);
+                document.getElementById('w'+num+'SnapRes').innerText = snapTies + " pcs" + fmt(snapTies * pSnap);
+                document.getElementById('w'+num+'WireRes').innerText = wireRolls + " rolls" + fmt(wireRolls * pWire);
+                document.getElementById('w'+num+'BoltRes').innerText = bolts + " pcs" + fmt(bolts * pBolt);
+                document.getElementById('w'+num+'SimpsonRes').innerText = simpson + " pcs" + fmt(simpson * pSimpson);
+                document.getElementById('area'+num+'Sub').innerText = "$" + cost.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+                return { yds: fY + wY, sticks: totalSticks, bolts: bolts, simp: simpson, clips: clips, snaps: snapTies, rolls: wireRolls, cost: cost };
+            }
+
+            for(let i=1; i<=foundationCount; i++) {
+                let wallHeightInput = document.getElementById('w'+i+'H');
+                if (!wallHeightInput) continue; 
+
+                let hVal = wallHeightInput.value || "0";
+                let lfVal = parseFloat(document.getElementById('f'+i+'LF').value) || 0;
+                
+                let pkgTitle = document.getElementById('sPkgTitle' + i);
+                if (pkgTitle) {
+                    pkgTitle.innerText = "FOUNDATION AREA " + i + ": " + lfVal + " LINEAL FEET OF " + hVal + " INCH WALL";
+                }
+
+                let block = document.getElementById('found-block-'+i);
+                let card = document.getElementById('pkg-card-'+i);
+                
+                if (lfVal === 0) {
+                    if(block) block.classList.add('print-hide');
+                    if(card) card.classList.add('print-hide');
+                } else {
+                    if(block) block.classList.remove('print-hide');
+                    if(card) card.classList.remove('print-hide');
+                }
+
+                let a = runArea(i);
+                
+                gConc += a.yds;
+                gR4 += a.sticks;
+                gBolt += a.bolts;
+                gSimp += a.simp;
+                gClip += a.clips;
+                gSnap += a.snaps; 
+                gWire += a.rolls;
+                grandTotal += a.cost;
+
+                let detailBox = document.getElementById('sumA'+i+'_Detail');
+                let subtotalBox = document.getElementById('sumA'+i+'_p');
+                if (detailBox && subtotalBox) {
+                    detailBox.innerHTML = 
+                        buildPkgRow('Concrete Total:', a.yds.toFixed(2) + ' yd\u00B3') +
+                        buildPkgRow('Rebar Total (#4):', a.sticks + ' sticks') +
+                        buildPkgRow('Anchor Bolts:', a.bolts + ' pcs') +
+                        buildPkgRow('Simpson Bolts:', a.simp + ' pcs') +
+                        buildPkgRow('Form Clips:', a.clips + ' pcs') +
+                        buildPkgRow('Snap Ties:', a.snaps + ' pcs') +
+                        buildPkgRow('Tie Wire:', a.rolls + ' rolls');
+                    subtotalBox.innerText = "Area " + i + " Subtotal: $" + a.cost.toLocaleString(undefined, {minimumFractionDigits:2});
+                }
+            }
+
+            let sfLF = parseFloat(document.getElementById('sfLF').value) || 0;
+            let sPkgSFLF = document.getElementById('sPkgSFLF');
+            if(sPkgSFLF) sPkgSFLF.innerText = sfLF;
+
+            let wrapSf = document.getElementById('wrap-sf');
+            let cardSf = document.getElementById('card-sf');
+            if (sfLF === 0) {
+                if(wrapSf) wrapSf.classList.add('print-hide');
+                if(cardSf) cardSf.classList.add('print-hide');
+            } else {
+                if(wrapSf) wrapSf.classList.remove('print-hide');
+                if(cardSf) cardSf.classList.remove('print-hide');
+            }
+
+            let sfW = parseFloat(document.getElementById('sfW').value) || 0;
+            let sfD = parseFloat(document.getElementById('sfD').value) || 0;
+            let sfH = parseFloat(document.getElementById('sfH').value) || 0;
+            let sfBoc = parseFloat(document.getElementById('sfBolt').value) || 0;
+            let sfCorn = parseFloat(document.getElementById('sfCorn').value) || 0;
+            let sfY = ((sfLF * (sfW/12) * (sfD/12)) / 27) * 1.05;
+            let sfR = Math.ceil((sfLF * sfH / 20) * 1.15);
+            let sfB = (sfBoc > 0 && sfLF > 0) ? (Math.ceil(sfLF / (sfBoc / 12)) + Math.ceil(sfLF / 16) + sfCorn) : 0;
+            let sfWireRolls = sfR > 0 ? Math.ceil(sfR / 60) : 0;
+            let sfCost = (sfY * pC) + (sfR * pR4) + (sfWireRolls * pWire) + (sfB * pBolt);
+            
+            document.getElementById('sfConcRes').innerText = sfY.toFixed(2) + " yd\u00B3" + fmt(sfY * pC);
+            document.getElementById('sfRebarHRes').innerText = sfR + " sticks" + fmt(sfR * pR4);
+            document.getElementById('sfBoltRes').innerText = sfB + " pcs" + fmt(sfB * pBolt);
+            document.getElementById('sfWireRes').innerText = sfWireRolls + " rolls" + fmt(sfWireRolls * pWire);
+            document.getElementById('sfSub').innerText = "$" + sfCost.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+            gConc += sfY; gR4 += sfR; gBolt += sfB; gWire += sfWireRolls; grandTotal += sfCost;
+
+            document.getElementById('sumSF_Detail').innerHTML = 
+                buildPkgRow('Concrete Total:', sfY.toFixed(2) + ' yd\u00B3') +
+                buildPkgRow('Rebar Total (#4):', sfR + ' sticks') +
+                buildPkgRow('Anchor Bolts:', sfB + ' pcs') +
+                buildPkgRow('Tie Wire:', sfWireRolls + ' rolls');
+            document.getElementById('sumSF_p').innerText = "Strip Ftg Subtotal: $" + sfCost.toLocaleString(undefined, {minimumFractionDigits:2});
+
+            function runPad(num) {
+                let qEl = document.getElementById('lpQ'+num);
+                if (!qEl) return { cy: 0, st: 0, q: 0 };
+                
+                let q = parseFloat(qEl.value)||0;
+                let l = parseFloat(document.getElementById('lpL'+num).value)||0;
+                let w = parseFloat(document.getElementById('lpW'+num).value)||0;
+                let d = parseFloat(document.getElementById('lpD'+num).value)||0;
+                let b = parseFloat(document.getElementById('lpB'+num).value)||0;
+                let oc = parseFloat(document.getElementById('lpOc'+num).value)||0;
+                
+                let yds = ((q * (l/12) * (w/12) * (d/12)) / 27) * 1.05;
+                let cutL = l > 6 ? l - 6 : 0;
+                let cutW = w > 6 ? w - 6 : 0;
+                let lf = 0;
+                let cutStr = "";
+
+                if (q > 0) {
+                    if (b > 0) {
+                        lf = q * (b * (cutL/12) + b * (cutW/12));
+                        if (cutL === cutW) { cutStr = `(${q * b * 2} @ ${cutL}")`; } else { cutStr = `(${q * b} @ ${cutL}") + (${q * b} @ ${cutW}")`; }
+                    } else if (oc > 0) {
+                        let barsL = cutW > 0 ? Math.ceil(cutW / oc) + 1 : 0;
+                        let barsW = cutL > 0 ? Math.ceil(cutL / oc) + 1 : 0;
+                        lf = q * (barsL * (cutL/12) + barsW * (cutW/12));
+                        if (cutL === cutW && barsL === barsW) { cutStr = `(${q * (barsL + barsW)} @ ${cutL}")`; } else { cutStr = `(${q * barsL} @ ${cutL}") + (${q * barsW} @ ${cutW}")`; }
+                    }
+                }
+                let cutSpan = document.getElementById('lpCut' + num);
+                if (cutSpan) cutSpan.innerText = cutStr;
+                let st = Math.ceil(lf / 20 * 1.15);
+                return { cy: yds, st, q };
+            }
+
+            let lpYds = 0, lpSticks = 0, lpRelabeledCount = 0;
+            for(let j=1; j<=padCount; j++) {
+                let pd = runPad(j);
+                if (pd.q > 0) lpRelabeledCount += pd.q;
+                lpYds += pd.cy;
+                lpSticks += pd.st;
+            }
+
+            let sPkgPadQ = document.getElementById('sPkgPadQ');
+            if(sPkgPadQ) sPkgPadQ.innerText = lpRelabeledCount;
+            
+            let wrapPad = document.getElementById('wrap-pad');
+            let cardPad = document.getElementById('card-pad');
+            if (lpRelabeledCount === 0) {
+                if(wrapPad) wrapPad.classList.add('print-hide');
+                if(cardPad) cardPad.classList.add('print-hide');
+            } else {
+                if(wrapPad) wrapPad.classList.remove('print-hide');
+                if(cardPad) cardPad.classList.remove('print-hide');
+            }
+
+            let lpDobies = lpRelabeledCount * 4;
+            let lpWireRolls = lpSticks > 0 ? Math.ceil(lpSticks / 60) : 0; 
+            let lpSubtotal = (lpYds * pC) + (lpSticks * pR4) + (lpDobies * pDobie) + (lpWireRolls * pWire);
+            
+            document.getElementById('lpConcRes').innerText = lpYds.toFixed(2) + " yd\u00B3" + fmt(lpYds * pC);
+            document.getElementById('lpRebarRes').innerText = lpSticks + " sticks" + fmt(lpSticks * pR4);
+            document.getElementById('lpDobieRes').innerText = lpDobies + " pcs" + fmt(lpDobies * pDobie);
+            document.getElementById('lpWireRes').innerText = lpWireRolls + " rolls" + fmt(lpWireRolls * pWire);
+            document.getElementById('lpSub').innerText = "$" + lpSubtotal.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+            gConc += lpYds; gR4 += lpSticks; gDobie += lpDobies; gWire += lpWireRolls; grandTotal += lpSubtotal;
+
+            document.getElementById('sumPad_Detail').innerHTML = 
+                buildPkgRow('Concrete Total:', lpYds.toFixed(2) + ' yd\u00B3') +
+                buildPkgRow('Rebar Total (#4):', lpSticks + ' sticks') +
+                buildPkgRow('Dobies:', lpDobies + ' pcs') +
+                buildPkgRow('Tie Wire:', lpWireRolls + ' rolls');
+            document.getElementById('sumPad_p').innerText = "Pads Subtotal: $" + lpSubtotal.toLocaleString(undefined, {minimumFractionDigits:2});
+
+            function flatCalc(sqId, thId, grId, waste) {
+                let sq = parseFloat(document.getElementById(sqId).value) || 0;
+                let th = parseFloat(document.getElementById(thId).value) || 0;
+                let gr = parseFloat(document.getElementById(grId).value) || 0;
+                
+                let yds = (sq * (th/12) / 27) * waste;
+                let sticks = 0;
+                if (gr > 0 && sq > 0) {
+                    let baseLF = (sq / (gr/12)) * 2;
+                    let edgeAllowance = Math.sqrt(sq) * 2; 
+                    sticks = Math.ceil(((baseLF + edgeAllowance) * 1.15) / 20);
+                }
+                let dobie = Math.ceil(sq / 10);
+                let rolls = sticks > 0 ? Math.ceil(sticks / 30) : 0; 
+                let cost = yds*pC + sticks*pR3 + dobie*pDobie + rolls*pWire;
+                return { yds, sticks, dobie, rolls, cost };
+            }
+            
+            let intSqVal = parseFloat(document.getElementById('intSq').value) || 0;
+            let sPkgIntSq = document.getElementById('sPkgIntSq');
+            if(sPkgIntSq) sPkgIntSq.innerText = intSqVal;
+
+            let wrapInt = document.getElementById('wrap-int');
+            let cardInt = document.getElementById('card-int');
+            if (intSqVal === 0) {
+                if(wrapInt) wrapInt.classList.add('print-hide');
+                if(cardInt) cardInt.classList.add('print-hide');
+            } else {
+                if(wrapInt) wrapInt.classList.remove('print-hide');
+                if(cardInt) cardInt.classList.remove('print-hide');
+            }
+
+            let iF = flatCalc('intSq', 'intThick', 'intGrid', 1.05);
+            document.getElementById('intRes').innerText = iF.yds.toFixed(2) + " yd\u00B3" + fmt(iF.yds * pC);
+            document.getElementById('intRebarRes').innerText = iF.sticks + " sticks" + fmt(iF.sticks * pR3);
+            document.getElementById('intWireRes').innerText = iF.rolls + " rolls" + fmt(iF.rolls * pWire);
+            document.getElementById('intDobieRes').innerText = iF.dobie + " pcs" + fmt(iF.dobie * pDobie);
+            document.getElementById('intSub').innerText = "$" + iF.cost.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+            gConc += iF.yds; gR3 += iF.sticks; gDobie += iF.dobie; gWire += iF.rolls; grandTotal += iF.cost;
+
+            document.getElementById('sumInt_Detail').innerHTML = 
+                buildPkgRow('Concrete Total:', iF.yds.toFixed(2) + ' yd\u00B3') +
+                buildPkgRow('Rebar Total (#3):', iF.sticks + ' sticks') +
+                buildPkgRow('Dobies:', iF.dobie + ' pcs') +
+                buildPkgRow('Tie Wire:', iF.rolls + ' rolls');
+            document.getElementById('sumInt_p').innerText = "Interior Subtotal: $" + iF.cost.toLocaleString(undefined, {minimumFractionDigits:2});
+
+            let extSqVal = parseFloat(document.getElementById('extSq').value) || 0;
+            let sPkgExtSq = document.getElementById('sPkgExtSq');
+            if(sPkgExtSq) sPkgExtSq.innerText = extSqVal;
+
+            let wrapExt = document.getElementById('wrap-ext');
+            let cardExt = document.getElementById('card-ext');
+            if (extSqVal === 0) {
+                if(wrapExt) wrapExt.classList.add('print-hide');
+                if(cardExt) cardExt.classList.add('print-hide');
+            } else {
+                if(wrapExt) wrapExt.classList.remove('print-hide');
+                if(cardExt) cardExt.classList.remove('print-hide');
+            }
+
+            let eF = flatCalc('extSq', 'extThick', 'extGrid', 1.08);
+            document.getElementById('extRes').innerText = eF.yds.toFixed(2) + " yd\u00B3" + fmt(eF.yds * pC);
+            document.getElementById('extRebarRes').innerText = eF.sticks + " sticks" + fmt(eF.sticks * pR3);
+            document.getElementById('extWireRes').innerText = eF.rolls + " rolls" + fmt(eF.rolls * pWire);
+            document.getElementById('extDobieRes').innerText = eF.dobie + " pcs" + fmt(eF.dobie * pDobie);
+            document.getElementById('extSub').innerText = "$" + eF.cost.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+            gConc += eF.yds; gR3 += eF.sticks; gDobie += eF.dobie; gWire += eF.rolls; grandTotal += eF.cost;
+
+            document.getElementById('sumExt_Detail').innerHTML = 
+                buildPkgRow('Concrete Total:', eF.yds.toFixed(2) + ' yd\u00B3') +
+                buildPkgRow('Rebar Total (#3):', eF.sticks + ' sticks') +
+                buildPkgRow('Dobies:', eF.dobie + ' pcs') +
+                buildPkgRow('Tie Wire:', eF.rolls + ' rolls');
+            document.getElementById('sumExt_p').innerText = "Exterior Subtotal: $" + eF.cost.toLocaleString(undefined, {minimumFractionDigits:2});
+
+            let stSq = parseFloat(document.getElementById('stSq').value) || 0;
+            let sPkgStSq = document.getElementById('sPkgStSq');
+            if(sPkgStSq) sPkgStSq.innerText = stSq;
+
+            let wrapStairs = document.getElementById('wrap-stairs');
+            let cardStairs = document.getElementById('card-stairs');
+            if (stSq === 0) {
+                if(wrapStairs) wrapStairs.classList.add('print-hide');
+                if(cardStairs) cardStairs.classList.add('print-hide');
+            } else {
+                if(wrapStairs) wrapStairs.classList.remove('print-hide');
+                if(cardStairs) cardStairs.classList.remove('print-hide');
+            }
+
+            let stTh = parseFloat(document.getElementById('stTh').value) || 0;
+            let sW = parseFloat(document.getElementById('stW').value) || 0;
+            let sR = parseFloat(document.getElementById('stR').value) || 0;
+            let slopeOc = parseFloat(document.getElementById('stSlopeOc').value) || 0;
+            
+            let stY = (stSq * (stTh/12) / 27) * 1.10;
+            let toeLF = sR * sW;
+            let slopeLF = 0;
+            if (sW > 0 && slopeOc > 0) {
+                slopeLF = (Math.ceil(sW / (slopeOc / 12)) + 1) * (stSq / sW);
+            }
+            let stR4 = Math.ceil((toeLF + slopeLF) / 20 * 1.15);
+            let sCost = (stY * pC) + (stR4 * pR4);
+            
+            document.getElementById('stRes').innerText = stY.toFixed(2) + " yd\u00B3" + fmt(stY * pC);
+            document.getElementById('stRebarRes').innerText = stR4 + " sticks" + fmt(stR4 * pR4);
+            document.getElementById('stSub').innerText = "Stairs Subtotal: $" + sCost.toLocaleString(undefined, {minimumFractionDigits: 2});
+
+            gConc += stY; gR4 += stR4; gWire += (stR4 > 0 ? Math.ceil(stR4/60) : 0); grandTotal += sCost;
+
+            document.getElementById('sumStairs_Detail').innerHTML = 
+                buildPkgRow('Concrete Total:', stY.toFixed(2) + ' yd\u00B3') +
+                buildPkgRow('Rebar Total (#4):', stR4 + ' sticks');
+            document.getElementById('sumStairs_p').innerText = "Stairs Subtotal: $" + sCost.toLocaleString(undefined, {minimumFractionDigits:2});
+
+            document.getElementById('gConc').innerText = gConc.toFixed(2) + " yd\u00B3" + fmt(gConc * pC);
+            document.getElementById('gR4').innerText = gR4 + " sticks" + fmt(gR4 * pR4);
+            document.getElementById('gR3').innerText = gR3 + " sticks" + fmt(gR3 * pR3);
+            document.getElementById('gBolt').innerText = gBolt + " pcs" + fmt(gBolt * pBolt);
+            document.getElementById('gSimp').innerText = gSimp + " pcs" + fmt(gSimp * pSimpson);
+            document.getElementById('gDobie').innerText = gDobie + " pcs" + fmt(gDobie * pDobie);
+            document.getElementById('gWire').innerText = gWire + " rolls" + fmt(gWire * pWire);
+            document.getElementById('gClip').innerText = gClip + " pcs" + fmt(gClip * pClip);
+            document.getElementById('gSnap').innerText = gSnap + " pcs" + fmt(gSnap * pSnap);
+            
+            document.getElementById('grand').innerText = "GRAND TOTAL: $" + grandTotal.toLocaleString(undefined, {minimumFractionDigits:2});
+        }
+    </script>
+</body>
+</html>
