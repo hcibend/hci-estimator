@@ -30,16 +30,8 @@
         .primary-lf { border: 2px solid #3498db !important; background: #f0f8ff !important; }
         
         .package-header-bar { background: #1a73e8; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
-        .pkg-container { column-count: 2; column-gap: 15px; }
         .package-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 6px solid #1a73e8; break-inside: avoid; page-break-inside: avoid; display: inline-block; width: 100%; box-sizing: border-box; }
-        
-        @media (max-width: 768px) { .pkg-container { column-count: 1; } }
-
-        .card-blue { border-left-color: #1a73e8; }
-        .card-gray { border-left-color: #7f8c8d; }
-        .card-orange { border-left-color: #e67e22; }
-        .card-light-blue { border-left-color: #3498db; }
-        .package-subtotal { color: #27ae60; font-weight: bold; margin-top: 10px; font-size: 16px; text-align: right; }
+        .pkg-title { font-size: 12px; padding-bottom: 2px; margin-bottom: 4px; }
 
         /* APP MEMORY (MODAL) STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
@@ -58,7 +50,7 @@
         /* AUTOMATED FLAWLESS PRINT SETTINGS         */
         /* ========================================= */
         @media print {
-            @page { margin: 0.5in; } /* Gives a perfect half-inch physical margin on ALL pages */
+            @page { margin: 0.5in; } 
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } 
             
             body { background: white; padding: 0 !important; color: black; font-size: 11px !important; }
@@ -83,13 +75,9 @@
             .total-row { padding-top: 4px !important; margin-top: 4px !important; font-size: 12px !important; }
             
             .package-header-bar { padding: 6px !important; font-size: 14px !important; margin-bottom: 10px !important; }
-            .pkg-container { column-count: 1 !important; display: block !important; column-gap: 0 !important; }
-            
-            /* Restored the floating color borders and rounded corners for perfection */
             .package-card { display: block !important; width: 100% !important; page-break-inside: avoid !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-left-width: 6px !important; }
-            
             .pkg-title { font-size: 12px !important; padding-bottom: 2px !important; margin-bottom: 4px !important; }
-            .package-subtotal { font-size: 12px !important; margin-top: 4px !important; }
+
             .grand-total-box { position: static !important; padding: 10px !important; font-size: 18px !important; margin-top: 10px !important; }
             
             body .print-hide, div.print-hide, .package-card.print-hide, .print-wrapper.print-hide { display: none !important; }
@@ -294,48 +282,8 @@
     </div>
 
     <div class="section" id="summarySection">
-        <div class="package-header-bar">Material Packages</div>
-        
-        <div class="pkg-container" id="pkg-container">
-            <div class="package-card card-blue" id="pkg-card-1">
-                <h3 class="pkg-title" id="sPkgTitle1">FOUNDATION AREA 1: <span id="sPkgALF1">0</span> LINEAL FEET OF <span id="sPkgA1">0</span> INCH WALL</h3>
-                <div id="sumA1_Detail"></div>
-                <div class="package-subtotal" id="sumA1_p">$0.00</div>
-            </div>
-
-            <div class="package-card card-gray" id="card-sf">
-                <h3 class="pkg-title">INTERIOR STRIP FOOTINGS (<span id="sPkgSFLF">0</span> LF)</h3>
-                <div id="sumSF_Detail"></div>
-                <div class="package-subtotal" id="sumSF_p">$0.00</div>
-            </div>
-            
-            <div class="package-card card-orange" id="card-pad">
-                <h3 class="pkg-title">LOAD POINT PADS (<span id="sPkgPadQ">0</span> PADS)</h3>
-                <div id="sumPad_Detail"></div>
-                <div class="package-subtotal" id="sumPad_p">$0.00</div>
-            </div>
-            
-            <div class="package-card card-light-blue" id="card-int">
-                <h3 class="pkg-title">INTERIOR FLATWORK (<span id="sPkgIntSq">0</span> SQ FT)</h3>
-                <div id="sumInt_Detail"></div>
-                <div class="package-subtotal" id="sumInt_p">$0.00</div>
-            </div>
-
-            <div class="package-card card-light-blue" id="card-ext">
-                <h3 class="pkg-title">EXTERIOR FLATWORK (<span id="sPkgExtSq">0</span> SQ FT)</h3>
-                <div id="sumExt_Detail"></div>
-                <div class="package-subtotal" id="sumExt_p">$0.00</div>
-            </div>
-
-            <div class="package-card card-orange" id="card-stairs">
-                <h3 class="pkg-title">STAIRS (<span id="sPkgStSq">0</span> SQ FT)</h3>
-                <div id="sumStairs_Detail"></div>
-                <div class="package-subtotal" id="sumStairs_p">$0.00</div>
-            </div>
-        </div>
-
-        <div class="package-card" style="background:#e8f0fe; border-left: 6px solid #27ae60; margin-top:15px; display: inline-block; width: 100%; box-sizing: border-box; break-inside: avoid;">
-            <h3 class="pkg-title" style="color:#27ae60;">Grand Total Job Materials</h3>
+        <div class="package-card" style="background:#e8f0fe; border-left: 6px solid #27ae60; display: inline-block; width: 100%; box-sizing: border-box; break-inside: avoid;">
+            <h3 class="pkg-title" style="color:#27ae60; font-size: 16px; border-left: none; padding-left: 0; text-transform: uppercase;">Grand Total Job Materials</h3>
             <div class="line-item"><span>Total Concrete:</span><span id="gConc" style="font-weight:bold;">0 yd&sup3;</span></div>
             <div class="line-item"><span>Total #4 Rebar:</span><span id="gR4" style="font-weight:bold;">0 sticks</span></div>
             <div class="line-item"><span>Total #3 Rebar:</span><span id="gR3" style="font-weight:bold;">0 sticks</span></div>
@@ -579,23 +527,12 @@
                 </div>
             </div>`;
             document.getElementById('foundation-wrapper').insertAdjacentHTML('beforeend', newHtml);
-
-            let pkgHtml = `
-            <div class="package-card card-blue" id="pkg-card-${i}">
-                <h3 class="pkg-title" id="sPkgTitle${i}">FOUNDATION AREA ${i}: <span id="sPkgALF${i}">0</span> LINEAL FEET OF <span id="sPkgA${i}">0</span> INCH WALL</h3>
-                <div id="sumA${i}_Detail"></div>
-                <div class="package-subtotal" id="sumA${i}_p">$0.00</div>
-            </div>`;
-            document.getElementById('card-sf').insertAdjacentHTML('beforebegin', pkgHtml);
-            
             if(!suppressCalc) calc();
         }
 
         function removeFoundation(id, suppressCalc=false) {
             let block = document.getElementById('found-block-' + id);
-            let card = document.getElementById('pkg-card-' + id);
             if (block) block.remove();
-            if (card) card.remove();
             if(!suppressCalc) relabelFoundations();
         }
 
@@ -650,7 +587,6 @@
             const pSnap = parseFloat(document.getElementById('pSnap').value) || 0;
 
             const fmt = (val) => " ($" + val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ")";
-            const buildPkgRow = (lbl, val) => `<div class="line-item"><span>${lbl}</span><span>${val}</span></div>`;
 
             let gConc = 0, gR4 = 0, gR3 = 0, gBolt = 0, gSimp = 0, gDobie = 0, gWire = 0, gClip = 0, gSnap = 0;
             let grandTotal = 0;
@@ -716,23 +652,18 @@
                 let wallHeightInput = document.getElementById('w'+i+'H');
                 if (!wallHeightInput) continue; 
 
-                let hVal = wallHeightInput.value || "0";
-                let lfVal = parseFloat(document.getElementById('f'+i+'LF').value) || 0;
-                
-                let pkgTitle = document.getElementById('sPkgTitle' + i);
-                if (pkgTitle) {
-                    pkgTitle.innerText = "FOUNDATION AREA " + i + ": " + lfVal + " LINEAL FEET OF " + hVal + " INCH WALL";
+                let hAreaTitle = document.getElementById('hArea' + i);
+                if (hAreaTitle) {
+                    hAreaTitle.innerText = wallHeightInput.value || "0";
                 }
 
+                let lfVal = parseFloat(document.getElementById('f'+i+'LF').value) || 0;
                 let block = document.getElementById('found-block-'+i);
-                let card = document.getElementById('pkg-card-'+i);
                 
                 if (lfVal === 0) {
                     if(block) block.classList.add('print-hide');
-                    if(card) card.classList.add('print-hide');
                 } else {
                     if(block) block.classList.remove('print-hide');
-                    if(card) card.classList.remove('print-hide');
                 }
 
                 let a = runArea(i);
@@ -745,34 +676,14 @@
                 gSnap += a.snaps; 
                 gWire += a.rolls;
                 grandTotal += a.cost;
-
-                let detailBox = document.getElementById('sumA'+i+'_Detail');
-                let subtotalBox = document.getElementById('sumA'+i+'_p');
-                if (detailBox && subtotalBox) {
-                    detailBox.innerHTML = 
-                        buildPkgRow('Concrete Total:', a.yds.toFixed(2) + ' yd\u00B3') +
-                        buildPkgRow('Rebar Total (#4):', a.sticks + ' sticks') +
-                        buildPkgRow('Anchor Bolts:', a.bolts + ' pcs') +
-                        buildPkgRow('Simpson Bolts:', a.simp + ' pcs') +
-                        buildPkgRow('Form Clips:', a.clips + ' pcs') +
-                        buildPkgRow('Snap Ties:', a.snaps + ' pcs') +
-                        buildPkgRow('Tie Wire:', a.rolls + ' rolls');
-                    subtotalBox.innerText = "Area " + i + " Subtotal: $" + a.cost.toLocaleString(undefined, {minimumFractionDigits:2});
-                }
             }
 
             let sfLF = parseFloat(document.getElementById('sfLF').value) || 0;
-            let sPkgSFLF = document.getElementById('sPkgSFLF');
-            if(sPkgSFLF) sPkgSFLF.innerText = sfLF;
-
             let wrapSf = document.getElementById('wrap-sf');
-            let cardSf = document.getElementById('card-sf');
             if (sfLF === 0) {
                 if(wrapSf) wrapSf.classList.add('print-hide');
-                if(cardSf) cardSf.classList.add('print-hide');
             } else {
                 if(wrapSf) wrapSf.classList.remove('print-hide');
-                if(cardSf) cardSf.classList.remove('print-hide');
             }
 
             let sfW = parseFloat(document.getElementById('sfW').value) || 0;
@@ -793,13 +704,6 @@
             document.getElementById('sfSub').innerText = "$" + sfCost.toLocaleString(undefined, {minimumFractionDigits: 2});
 
             gConc += sfY; gR4 += sfR; gBolt += sfB; gWire += sfWireRolls; grandTotal += sfCost;
-
-            document.getElementById('sumSF_Detail').innerHTML = 
-                buildPkgRow('Concrete Total:', sfY.toFixed(2) + ' yd\u00B3') +
-                buildPkgRow('Rebar Total (#4):', sfR + ' sticks') +
-                buildPkgRow('Anchor Bolts:', sfB + ' pcs') +
-                buildPkgRow('Tie Wire:', sfWireRolls + ' rolls');
-            document.getElementById('sumSF_p').innerText = "Strip Ftg Subtotal: $" + sfCost.toLocaleString(undefined, {minimumFractionDigits:2});
 
             function runPad(num) {
                 let qEl = document.getElementById('lpQ'+num);
@@ -843,17 +747,11 @@
                 lpSticks += pd.st;
             }
 
-            let sPkgPadQ = document.getElementById('sPkgPadQ');
-            if(sPkgPadQ) sPkgPadQ.innerText = lpRelabeledCount;
-            
             let wrapPad = document.getElementById('wrap-pad');
-            let cardPad = document.getElementById('card-pad');
             if (lpRelabeledCount === 0) {
                 if(wrapPad) wrapPad.classList.add('print-hide');
-                if(cardPad) cardPad.classList.add('print-hide');
             } else {
                 if(wrapPad) wrapPad.classList.remove('print-hide');
-                if(cardPad) cardPad.classList.remove('print-hide');
             }
 
             let lpDobies = lpRelabeledCount * 4;
@@ -867,13 +765,6 @@
             document.getElementById('lpSub').innerText = "$" + lpSubtotal.toLocaleString(undefined, {minimumFractionDigits: 2});
 
             gConc += lpYds; gR4 += lpSticks; gDobie += lpDobies; gWire += lpWireRolls; grandTotal += lpSubtotal;
-
-            document.getElementById('sumPad_Detail').innerHTML = 
-                buildPkgRow('Concrete Total:', lpYds.toFixed(2) + ' yd\u00B3') +
-                buildPkgRow('Rebar Total (#4):', lpSticks + ' sticks') +
-                buildPkgRow('Dobies:', lpDobies + ' pcs') +
-                buildPkgRow('Tie Wire:', lpWireRolls + ' rolls');
-            document.getElementById('sumPad_p').innerText = "Pads Subtotal: $" + lpSubtotal.toLocaleString(undefined, {minimumFractionDigits:2});
 
             function flatCalc(sqId, thId, grId, waste) {
                 let sq = parseFloat(document.getElementById(sqId).value) || 0;
@@ -894,17 +785,11 @@
             }
             
             let intSqVal = parseFloat(document.getElementById('intSq').value) || 0;
-            let sPkgIntSq = document.getElementById('sPkgIntSq');
-            if(sPkgIntSq) sPkgIntSq.innerText = intSqVal;
-
             let wrapInt = document.getElementById('wrap-int');
-            let cardInt = document.getElementById('card-int');
             if (intSqVal === 0) {
                 if(wrapInt) wrapInt.classList.add('print-hide');
-                if(cardInt) cardInt.classList.add('print-hide');
             } else {
                 if(wrapInt) wrapInt.classList.remove('print-hide');
-                if(cardInt) cardInt.classList.remove('print-hide');
             }
 
             let iF = flatCalc('intSq', 'intThick', 'intGrid', 1.05);
@@ -916,25 +801,12 @@
 
             gConc += iF.yds; gR3 += iF.sticks; gDobie += iF.dobie; gWire += iF.rolls; grandTotal += iF.cost;
 
-            document.getElementById('sumInt_Detail').innerHTML = 
-                buildPkgRow('Concrete Total:', iF.yds.toFixed(2) + ' yd\u00B3') +
-                buildPkgRow('Rebar Total (#3):', iF.sticks + ' sticks') +
-                buildPkgRow('Dobies:', iF.dobie + ' pcs') +
-                buildPkgRow('Tie Wire:', iF.rolls + ' rolls');
-            document.getElementById('sumInt_p').innerText = "Interior Subtotal: $" + iF.cost.toLocaleString(undefined, {minimumFractionDigits:2});
-
             let extSqVal = parseFloat(document.getElementById('extSq').value) || 0;
-            let sPkgExtSq = document.getElementById('sPkgExtSq');
-            if(sPkgExtSq) sPkgExtSq.innerText = extSqVal;
-
             let wrapExt = document.getElementById('wrap-ext');
-            let cardExt = document.getElementById('card-ext');
             if (extSqVal === 0) {
                 if(wrapExt) wrapExt.classList.add('print-hide');
-                if(cardExt) cardExt.classList.add('print-hide');
             } else {
                 if(wrapExt) wrapExt.classList.remove('print-hide');
-                if(cardExt) cardExt.classList.remove('print-hide');
             }
 
             let eF = flatCalc('extSq', 'extThick', 'extGrid', 1.08);
@@ -946,25 +818,12 @@
 
             gConc += eF.yds; gR3 += eF.sticks; gDobie += eF.dobie; gWire += eF.rolls; grandTotal += eF.cost;
 
-            document.getElementById('sumExt_Detail').innerHTML = 
-                buildPkgRow('Concrete Total:', eF.yds.toFixed(2) + ' yd\u00B3') +
-                buildPkgRow('Rebar Total (#3):', eF.sticks + ' sticks') +
-                buildPkgRow('Dobies:', eF.dobie + ' pcs') +
-                buildPkgRow('Tie Wire:', eF.rolls + ' rolls');
-            document.getElementById('sumExt_p').innerText = "Exterior Subtotal: $" + eF.cost.toLocaleString(undefined, {minimumFractionDigits:2});
-
             let stSq = parseFloat(document.getElementById('stSq').value) || 0;
-            let sPkgStSq = document.getElementById('sPkgStSq');
-            if(sPkgStSq) sPkgStSq.innerText = stSq;
-
             let wrapStairs = document.getElementById('wrap-stairs');
-            let cardStairs = document.getElementById('card-stairs');
             if (stSq === 0) {
                 if(wrapStairs) wrapStairs.classList.add('print-hide');
-                if(cardStairs) cardStairs.classList.add('print-hide');
             } else {
                 if(wrapStairs) wrapStairs.classList.remove('print-hide');
-                if(cardStairs) cardStairs.classList.remove('print-hide');
             }
 
             let stTh = parseFloat(document.getElementById('stTh').value) || 0;
@@ -986,11 +845,6 @@
             document.getElementById('stSub').innerText = "Stairs Subtotal: $" + sCost.toLocaleString(undefined, {minimumFractionDigits: 2});
 
             gConc += stY; gR4 += stR4; gWire += (stR4 > 0 ? Math.ceil(stR4/60) : 0); grandTotal += sCost;
-
-            document.getElementById('sumStairs_Detail').innerHTML = 
-                buildPkgRow('Concrete Total:', stY.toFixed(2) + ' yd\u00B3') +
-                buildPkgRow('Rebar Total (#4):', stR4 + ' sticks');
-            document.getElementById('sumStairs_p').innerText = "Stairs Subtotal: $" + sCost.toLocaleString(undefined, {minimumFractionDigits:2});
 
             document.getElementById('gConc').innerText = gConc.toFixed(2) + " yd\u00B3" + fmt(gConc * pC);
             document.getElementById('gR4').innerText = gR4 + " sticks" + fmt(gR4 * pR4);
