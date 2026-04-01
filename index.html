@@ -29,7 +29,6 @@
         .remove-btn { background: #e74c3c; color: white; border: none; border-radius: 4px; width: 26px; height: 26px; font-size: 24px; font-weight: bold; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; padding: 0; margin-top: -2px; }
         .primary-lf { border: 2px solid #3498db !important; background: #f0f8ff !important; }
         
-        .package-header-bar { background: #1a73e8; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
         .package-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 6px solid #1a73e8; break-inside: avoid; page-break-inside: avoid; display: inline-block; width: 100%; box-sizing: border-box; }
         .pkg-title { font-size: 12px; padding-bottom: 2px; margin-bottom: 4px; }
 
@@ -47,42 +46,28 @@
         .load-job-btn { background: #27ae60; color: white; border: none; border-radius: 4px; padding: 8px 15px; cursor: pointer; font-weight: bold; font-size: 14px; margin-left: 10px; }
 
         /* ========================================= */
-        /* AUTOMATED FLAWLESS PRINT SETTINGS         */
+        /* CLEANED UP PRINT SETTINGS                 */
         /* ========================================= */
         @media print {
             @page { margin: 0.5in; } 
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } 
             
-            body { background: white; padding: 0 !important; color: black; font-size: 11px !important; }
+            body { background: white; padding: 0 !important; color: black; }
             
-            .print-btn, .add-btn, .remove-btn, .modal-overlay { display: none !important; }
-            .print-wrapper { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 10px !important; }
-            h1 { font-size: 18px !important; margin-bottom: 10px !important; }
-            h2 { font-size: 14px !important; padding-bottom: 2px !important; margin-bottom: 4px !important; }
-            h3 { font-size: 12px !important; margin-bottom: 2px !important; border-left-width: 2px !important; padding-left: 6px !important; }
+            /* Hide the buttons from the paper */
+            .print-btn, .add-btn, .remove-btn, .modal-overlay, .top-action-buttons { display: none !important; }
             
-            .section { border: 1px solid #ccc !important; padding: 8px 12px !important; margin-bottom: 10px !important; page-break-inside: avoid; }
-            .stage-header { padding: 4px 10px !important; font-size: 11px !important; margin-bottom: 0 !important; }
-            .stage-container { border: 1px solid #ccc !important; border-top: none !important; padding: 8px 12px !important; margin-bottom: 0 !important; }
+            /* Keep blocks together so they don't split across pages awkwardly */
+            .print-wrapper, .section, .stage-container, .package-card { page-break-inside: avoid !important; break-inside: avoid !important; }
             
-            .row { margin-bottom: 4px !important; gap: 5px !important; }
-            label { font-size: 9px !important; margin-bottom: 1px !important; }
-            input, textarea { border: none !important; border-bottom: 1px solid #aaa !important; border-radius: 0 !important; padding: 2px 4px !important; font-size: 12px !important; height: auto !important; background: transparent !important; color: black !important; resize: none !important; }
-            .primary-lf { border: none !important; border-bottom: 2px solid #3498db !important; background: transparent !important; }
+            /* Make inputs look like standard text on paper */
+            input, textarea { border: none !important; border-bottom: 1px solid #ccc !important; background: transparent !important; resize: none !important; color: black !important; padding: 5px 0 !important; }
+            .primary-lf { border: none !important; border-bottom: 2px solid #3498db !important; }
             
-            .results-box { padding: 6px 10px !important; margin-top: 6px !important; border-left-width: 3px !important; }
-            .line-item { padding: 1px 4px !important; font-size: 11px !important; margin-bottom: 0 !important; }
-            .total-row { padding-top: 4px !important; margin-top: 4px !important; font-size: 12px !important; }
+            .grand-total-box { position: static !important; margin-top: 20px !important; }
             
-            .package-header-bar { padding: 6px !important; font-size: 14px !important; margin-bottom: 10px !important; }
-            .package-card { display: block !important; width: 100% !important; page-break-inside: avoid !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-left-width: 6px !important; }
-            .pkg-title { font-size: 12px !important; padding-bottom: 2px !important; margin-bottom: 4px !important; }
-
-            .grand-total-box { position: static !important; padding: 10px !important; font-size: 18px !important; margin-top: 10px !important; }
-            
-            body .print-hide, div.print-hide, .package-card.print-hide, .print-wrapper.print-hide { display: none !important; }
-            body.summary-mode .hide-on-summary { display: none !important; }
-            body.summary-mode .section { box-shadow: none !important; border: none !important; padding: 0 !important; margin-bottom: 10px !important; }
+            /* Hide empty sections perfectly */
+            body .print-hide, div.print-hide { display: none !important; }
         }
     </style>
 </head>
@@ -90,7 +75,7 @@
 
     <h1 style="text-align:center; color:#2c3e50; margin-bottom:15px;">Harrison Contracting Inc. - Project Estimate</h1>
 
-    <div style="display: flex; gap: 10px; margin-bottom: 20px;" class="hide-on-summary">
+    <div class="top-action-buttons" style="display: flex; gap: 10px; margin-bottom: 20px;">
         <button class="print-btn" style="flex: 1; background-color: #2980b9; padding: 12px; font-size: 16px;" onclick="saveJob()">Save Job</button>
         <button class="print-btn" style="flex: 1; background-color: #8e44ad; padding: 12px; font-size: 16px;" onclick="openLoadModal()">Load Job</button>
     </div>
@@ -104,7 +89,7 @@
         <textarea id="jobNotes" rows="3" placeholder="Notes / Address / Client Name..."></textarea>
     </div>
 
-    <div class="section hide-on-summary">
+    <div class="section">
         <h2>Material Rates</h2>
         <div class="row">
             <div class="field"><label>Concrete $/yd</label><input type="number" id="pConc" value="250" oninput="calc()"></div>
@@ -123,7 +108,7 @@
         </div>
     </div>
 
-    <div id="foundation-wrapper" class="hide-on-summary">
+    <div id="foundation-wrapper">
         <div class="foundation-block print-wrapper" id="found-block-1">
             <div class="stage-header" id="sh-f1">
                 <span>FOUNDATION AREA 1 (<span id="hArea1">22</span>" WALL)</span>
@@ -172,9 +157,9 @@
         </div>
     </div>
     
-    <button class="add-btn hide-on-summary" onclick="addFoundation()">+ Add Another Foundation Area</button>
+    <button class="add-btn" onclick="addFoundation()">+ Add Another Foundation Area</button>
 
-    <div class="print-wrapper hide-on-summary" id="wrap-sf">
+    <div class="print-wrapper" id="wrap-sf">
         <div class="stage-header">INTERIOR STRIP FOOTINGS</div>
         <div class="stage-container">
             <div class="row">
@@ -197,7 +182,7 @@
         </div>
     </div>
 
-    <div class="print-wrapper hide-on-summary" id="wrap-pad">
+    <div class="print-wrapper" id="wrap-pad">
         <div class="stage-header">LOAD POINT FOOTINGS (PADS)</div>
         <div class="stage-container" style="margin-bottom: 0;">
             <div id="dynamic-pads-wrapper">
@@ -223,9 +208,9 @@
         </div>
     </div>
     
-    <button class="add-btn hide-on-summary" onclick="addPad()" style="margin-top: -5px; border-radius: 0 0 8px 8px;">+ Add Another Pad Type</button>
+    <button class="add-btn" onclick="addPad()" style="margin-top: -5px; border-radius: 0 0 8px 8px;">+ Add Another Pad Type</button>
 
-    <div class="print-wrapper hide-on-summary" id="wrap-int">
+    <div class="print-wrapper" id="wrap-int">
         <div class="stage-header">INTERIOR FLATWORK</div>
         <div class="stage-container">
             <div class="row">
@@ -243,7 +228,7 @@
         </div>
     </div>
 
-    <div class="print-wrapper hide-on-summary" id="wrap-ext">
+    <div class="print-wrapper" id="wrap-ext">
         <div class="stage-header">EXTERIOR FLATWORK</div>
         <div class="stage-container">
             <div class="row">
@@ -261,7 +246,7 @@
         </div>
     </div>
 
-    <div class="print-wrapper hide-on-summary" id="wrap-stairs">
+    <div class="print-wrapper" id="wrap-stairs">
         <div class="stage-header">STAIRS</div>
         <div class="stage-container">
             <div class="row">
@@ -281,7 +266,7 @@
         </div>
     </div>
 
-    <div class="section" id="summarySection">
+    <div class="section">
         <div class="package-card" style="background:#e8f0fe; border-left: 6px solid #27ae60; display: inline-block; width: 100%; box-sizing: border-box; break-inside: avoid;">
             <h3 class="pkg-title" style="color:#27ae60; font-size: 16px; border-left: none; padding-left: 0; text-transform: uppercase;">Grand Total Job Materials</h3>
             <div class="line-item"><span>Total Concrete:</span><span id="gConc" style="font-weight:bold;">0 yd&sup3;</span></div>
@@ -298,10 +283,7 @@
 
     <div class="grand-total-box" id="grand">GRAND TOTAL: $0.00</div>
     
-    <div style="display: flex; gap: 10px; margin-bottom: 40px; margin-top: 20px;">
-        <button class="print-btn" style="flex: 1; background-color: #3498db;" onclick="printSummary()">Print Summary Only</button>
-        <button class="print-btn" style="flex: 1;" onclick="printFull()">Print Full Details</button>
-    </div>
+    <button class="print-btn" style="margin-bottom: 40px; margin-top: 20px;" onclick="window.print()">Print Estimate</button>
 
     <div class="modal-overlay" id="loadModal">
         <div class="modal">
@@ -561,18 +543,6 @@
             let block = document.getElementById('pad-block-' + id);
             if (block) block.remove();
             if(!suppressCalc) relabelPads();
-        }
-
-        function printSummary() {
-            document.body.classList.add('summary-mode');
-            void document.body.offsetHeight;
-            window.print();
-            document.body.classList.remove('summary-mode');
-        }
-
-        function printFull() {
-            document.body.classList.remove('summary-mode');
-            window.print();
         }
 
         function calc() {
